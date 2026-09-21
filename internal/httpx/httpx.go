@@ -11,8 +11,8 @@ import (
 	"time"
 )
 
-// UserAgent identifies Breaklist to public APIs that ask for one.
-const UserAgent = "Breaklist/2.0 (+https://github.com/groblox/breaklist-lp)"
+// UserAgent identifies Tickr to public APIs that ask for one.
+const UserAgent = "Tickr/2.0 (+https://github.com/groblox/tickr-lp)"
 
 // Client is the shared HTTP client with a sane timeout.
 var Client = &http.Client{Timeout: 20 * time.Second}

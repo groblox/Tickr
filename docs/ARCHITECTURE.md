@@ -1,6 +1,6 @@
 # Architecture
 
-Breaklist 2 is a single Go binary with three responsibilities: a **report pipeline**, a **scheduler**, and an **HTTP server** that hosts the JSON API and the embedded GUI.
+Tickr 2 is a single Go binary with three responsibilities: a **report pipeline**, a **scheduler**, and an **HTTP server** that hosts the JSON API and the embedded GUI.
 
 ```mermaid
 graph TD
@@ -8,10 +8,10 @@ graph TD
         UI["Report layout · Connectors · Schedule · General · Preview"]
     end
 
-    subgraph Server["breaklist serve"]
+    subgraph Server["tickr serve"]
         API["JSON API (internal/server)"]
         SCH["Scheduler (internal/scheduler)"]
-        STORE["Config store (breaklist.json)"]
+        STORE["Config store (tickr.json)"]
         REN["Renderer (internal/render)"]
         MODS["Modules (internal/modules)"]
         CONN["Connectors (internal/connectors)"]
@@ -34,13 +34,13 @@ graph TD
     MODS --> CONN
     CONN --> WX & HA & GCAL & DBX & FUN
     REN -->|HTML + images| WK["wkhtmltoimage (measure)<br/>wkhtmltopdf (render)"]
-    WK --> PDF["output/breaklist.pdf"]
+    WK --> PDF["output/tickr.pdf"]
     PDF -->|print command| PRN["Thermal printer"]
 ```
 
 ## Report pipeline
 
-1. **Config** — `config.Store` loads `breaklist.json` (importing a legacy `.env` on first run) and hands out deep copies. Secrets are redacted on the way out to the GUI and merged back on save so a round-trip never blanks a token.
+1. **Config** — `config.Store` loads `tickr.json` (importing a legacy `.env` on first run) and hands out deep copies. Secrets are redacted on the way out to the GUI and merged back on save so a round-trip never blanks a token.
 2. **Sections** — `cfg.Sections` is an ordered list of `{id, enabled, options}`. `modules.NormalizeSections` guarantees every registered module appears exactly once, appending newly added modules disabled so upgrades never change a layout.
 3. **Modules** — each section is a `modules.Module`: `Info()` returns metadata plus an option *schema* (`[]Field`) the GUI renders as a form; `Render(ctx, env, options)` returns an HTML fragment and a rough pixel-height estimate. Modules run **concurrently** with a 45 s timeout each; a failing module is logged and skipped so one dead API never blocks the morning print. `Env` shares the forecast between weather modules and exposes unit helpers and a per-day seed for "of the day" picks.
 4. **Page** — `render.Page` wraps the fragments in the page template (CSS sized for the paper width). Inline `data:` images are written to `output/img/` because wkhtmltopdf ignores data URIs in `src`.

@@ -13,8 +13,8 @@ import (
 	"net/url"
 	"strings"
 
-	"breaklist/internal/config"
-	"breaklist/internal/httpx"
+	"tickr/internal/config"
+	"tickr/internal/httpx"
 )
 
 // DropboxRedirectURI must match the URI registered on the Dropbox app.

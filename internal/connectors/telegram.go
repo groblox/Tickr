@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"breaklist/internal/httpx"
+	"tickr/internal/httpx"
 )
 
 // Telegram is a minimal client for the parts of the Bot API "send text,

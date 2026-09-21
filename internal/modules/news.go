@@ -7,7 +7,7 @@ import (
 	"strings"
 	"sync"
 
-	"breaklist/internal/httpx"
+	"tickr/internal/httpx"
 
 	"github.com/PuerkitoBio/goquery"
 )

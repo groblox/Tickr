@@ -3,26 +3,26 @@
 ## Prerequisites
 
 - Go 1.22 or newer
-- [wkhtmltopdf](https://wkhtmltopdf.org/downloads.html) (ships `wkhtmltoimage` too, which Breaklist uses to measure content height)
+- [wkhtmltopdf](https://wkhtmltopdf.org/downloads.html) (ships `wkhtmltoimage` too, which Tickr uses to measure content height)
 - No Node.js: the GUI is plain HTML/CSS/JS embedded with `go:embed`.
 
 ## Build, test, run
 
 ```sh
-make            # build/breaklist(.exe)
+make            # build/tickr(.exe)
 make test       # go vet + go test ./...
 make serve      # start the GUI from the repo folder
 make run        # generate one report
 make release    # goreleaser snapshot for all platforms
 ```
 
-During development the server must be restarted to pick up Go or web changes (`taskkill /IM breaklist.exe` on Windows, `pkill breaklist` elsewhere).
+During development the server must be restarted to pick up Go or web changes (`taskkill /IM tickr.exe` on Windows, `pkill tickr` elsewhere).
 
 ## Layout
 
 | Path | What lives there |
 |------|------------------|
-| `cmd/breaklist/main.go` | CLI: `serve`, `open`, `generate [--print]`, `modules`, `version`; data-folder resolution |
+| `cmd/tickr/main.go` | CLI: `serve`, `open`, `generate [--print]`, `modules`, `version`; data-folder resolution |
 | `internal/config` | `Config` struct, JSON store with atomic writes, `.env` import, secret redaction/merge |
 | `internal/modules/module.go` | `Module` interface, option `Field` schema, `Env`, registry, default layout, template helpers |
 | `internal/modules/*.go` | Sections grouped by theme: `core`, `weather`, `news`, `fun`, `images`, `misc`, `ha`, `kids` |
@@ -35,7 +35,7 @@ During development the server must be restarted to pick up Go or web changes (`t
 | `internal/astro` | Meeus algorithms for equinoxes, solstices, new and full moons (tested against USNO times) |
 | `internal/imaging` | Box-filter resize, Floyd–Steinberg dither, PNG/JPEG encode, data URIs |
 | `assets/weathercodes` | Icon PNGs named `<tomorrow.io code><0 day|1 night>.png`; Open-Meteo WMO codes are mapped onto them |
-| `legacy/` | Breaklist 1.x sources, untouched, for reference |
+| `legacy/` | Tickr 1.x sources, untouched, for reference |
 
 ## Conventions
 
@@ -78,7 +78,7 @@ For the EPSON TM-T20II on an 80mm roll (`EA5MDLTMT20II.GPD`, ColumnMode
 width ≈72.0mm — matching `printerLeftMarginMM=3` and the config's
 `paperWidthMm=72` almost exactly. Pushing `paperWidthMm` past ~72 on this
 printer reproducibly clips the right edge; there is no more room to give,
-regardless of anything in Breaklist's own rendering.
+regardless of anything in Tickr's own rendering.
 
 Two other gotchas specific to this printer/driver combination:
 
@@ -87,12 +87,12 @@ Two other gotchas specific to this printer/driver combination:
   command, and Windows all report success). The driver also ships a
   same-width `x 3276 mm` variant with no such cap; that must be selected as
   the printer's default in Windows' own Printing Preferences dialog — this
-  is a Windows setting, not something Breaklist's config controls.
+  is a Windows setting, not something Tickr's config controls.
 - Printing through Adobe Acrobat's `-Verb Print`/`/t` command-line printing
   does not respect a PDF's own page size — it prints onto whatever paper
   form is currently the Windows default, vertically **centering** shorter
   content within it. Combined with the 3276mm form above, a normal-length
-  report would print after several feet of blank paper. Breaklist's default
+  report would print after several feet of blank paper. Tickr's default
   print command now uses [SumatraPDF](https://www.sumatrapdfreader.org/)
   instead (`-print-to "<printer>" -print-settings
   "noscale,disable-auto-rotation" -silent "{pdf}"`), which prints each job

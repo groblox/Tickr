@@ -21,12 +21,12 @@ import (
 	"sync"
 	"time"
 
-	"breaklist/internal/config"
-	"breaklist/internal/connectors"
-	"breaklist/internal/logging"
-	"breaklist/internal/modules"
-	"breaklist/internal/render"
-	"breaklist/internal/scheduler"
+	"tickr/internal/config"
+	"tickr/internal/connectors"
+	"tickr/internal/logging"
+	"tickr/internal/modules"
+	"tickr/internal/render"
+	"tickr/internal/scheduler"
 )
 
 //go:embed web
@@ -139,7 +139,7 @@ func (s *Server) Run(ctx context.Context) error {
 	if err != nil {
 		return fmt.Errorf("port %d is busy: %w", cfg.Server.Port, err)
 	}
-	log.Printf("Breaklist GUI running at http://%s — reachable from the LAN; it has no login, so keep this network trusted", addr)
+	log.Printf("Tickr GUI running at http://%s — reachable from the LAN; it has no login, so keep this network trusted", addr)
 	go func() {
 		<-ctx.Done()
 		shutdownCtx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
@@ -152,7 +152,7 @@ func (s *Server) Run(ctx context.Context) error {
 	return nil
 }
 
-// guardConfig rewrites breaklist.json from memory if a sync client removes it.
+// guardConfig rewrites tickr.json from memory if a sync client removes it.
 func (s *Server) guardConfig(ctx context.Context) {
 	ticker := time.NewTicker(30 * time.Second)
 	defer ticker.Stop()
@@ -938,7 +938,7 @@ func (s *Server) handleTelegramMessage(ctx context.Context, tg *connectors.Teleg
 	if !telegramChatAllowed(cfg.Connectors.Telegram.AllowedChatIDs, m.ChatID) {
 		log.Printf("telegram: message from unapproved chat %d (%s)", m.ChatID, m.From)
 		_ = tg.SendMessage(ctx, m.ChatID, fmt.Sprintf(
-			"This bot isn't set up to print for you yet. Your chat ID is %d — add it under Connectors → Telegram in Breaklist to enable printing.", m.ChatID))
+			"This bot isn't set up to print for you yet. Your chat ID is %d — add it under Connectors → Telegram in Tickr to enable printing.", m.ChatID))
 		return
 	}
 	if !m.IsText {
@@ -1186,7 +1186,7 @@ func (s *Server) startCallback(name, addr, path string, exchange func(context.Co
 		code := r.URL.Query().Get("code")
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		if code == "" {
-			fmt.Fprint(w, authPage("Missing authorization code", "Please try again from Breaklist.", false))
+			fmt.Fprint(w, authPage("Missing authorization code", "Please try again from Tickr.", false))
 			return
 		}
 		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
@@ -1197,7 +1197,7 @@ func (s *Server) startCallback(name, addr, path string, exchange func(context.Co
 			return
 		}
 		log.Printf("%s linked", name)
-		fmt.Fprint(w, authPage("Linked!", "You can close this tab and return to Breaklist.", true))
+		fmt.Fprint(w, authPage("Linked!", "You can close this tab and return to Tickr.", true))
 		go func() {
 			time.Sleep(500 * time.Millisecond)
 			_ = srv.Close()

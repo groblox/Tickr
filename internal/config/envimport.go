@@ -6,9 +6,9 @@ import (
 	"strings"
 )
 
-// ImportEnv reads a legacy .env file (from Breaklist 1.x) into cfg.
-// Unknown keys are ignored. It is only used the first time Breaklist 2 runs
-// in a directory that has no breaklist.json yet.
+// ImportEnv reads a legacy .env file (from Tickr 1.x) into cfg.
+// Unknown keys are ignored. It is only used the first time Tickr 2 runs
+// in a directory that has no tickr.json yet.
 func ImportEnv(cfg *Config, path string) {
 	env := ReadEnvFile(path)
 	set := func(dst *string, key string) {

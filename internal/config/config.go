@@ -1,6 +1,6 @@
-// Package config defines the Breaklist configuration file and its persistence.
+// Package config defines the Tickr configuration file and its persistence.
 //
-// Everything the GUI edits lives in one JSON document (breaklist.json) in the
+// Everything the GUI edits lives in one JSON document (tickr.json) in the
 // data directory. Sections are stored in print order.
 package config
 
@@ -21,7 +21,7 @@ import (
 const CurrentVersion = 2
 
 // FileName is the configuration file name inside the data directory.
-const FileName = "breaklist.json"
+const FileName = "tickr.json"
 
 // Config is the whole user configuration.
 type Config struct {
@@ -219,7 +219,7 @@ func localTimezoneName() string {
 // scheduler can share it safely.
 //
 // The file is written to the data folder and mirrored to a per-user folder
-// outside any cloud sync (os.UserConfigDir()/Breaklist/<id>/). On load the
+// outside any cloud sync (os.UserConfigDir()/Tickr/<id>/). On load the
 // copy with the newest SavedAt wins, which protects the settings from sync
 // clients that roll files back or delete them.
 type Store struct {
@@ -229,7 +229,7 @@ type Store struct {
 	cfg    *Config
 }
 
-// NewStore creates a store bound to dataDir/breaklist.json.
+// NewStore creates a store bound to dataDir/tickr.json.
 func NewStore(dataDir string) *Store {
 	s := &Store{path: filepath.Join(dataDir, FileName)}
 	// Temporary data folders (tests, throwaway runs) get no mirror.
@@ -239,7 +239,7 @@ func NewStore(dataDir string) *Store {
 	if base, err := os.UserConfigDir(); err == nil {
 		abs, _ := filepath.Abs(dataDir)
 		sum := sha1.Sum([]byte(strings.ToLower(filepath.ToSlash(abs))))
-		s.mirror = filepath.Join(base, "Breaklist", fmt.Sprintf("%x", sum[:6]), FileName)
+		s.mirror = filepath.Join(base, "Tickr", fmt.Sprintf("%x", sum[:6]), FileName)
 	}
 	return s
 }

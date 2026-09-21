@@ -9,10 +9,10 @@ import (
 	"testing"
 	"time"
 
-	"breaklist/internal/config"
+	"tickr/internal/config"
 )
 
-// fakeHA mimics the handful of Home Assistant REST endpoints Breaklist uses.
+// fakeHA mimics the handful of Home Assistant REST endpoints Tickr uses.
 func fakeHA(t *testing.T) *httptest.Server {
 	t.Helper()
 	mux := http.NewServeMux()

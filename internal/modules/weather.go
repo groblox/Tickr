@@ -9,10 +9,10 @@ import (
 	"strings"
 	"time"
 
-	"breaklist/assets"
-	"breaklist/internal/connectors"
-	"breaklist/internal/httpx"
-	"breaklist/internal/wxicons"
+	"tickr/assets"
+	"tickr/internal/connectors"
+	"tickr/internal/httpx"
+	"tickr/internal/wxicons"
 )
 
 // ── Hourly strip ─────────────────────────────────────────────────────────────

@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"breaklist/internal/httpx"
+	"tickr/internal/httpx"
 )
 
 // ── Countdowns ───────────────────────────────────────────────────────────────

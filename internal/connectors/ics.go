@@ -15,7 +15,7 @@ import (
 	"sync"
 	"time"
 
-	"breaklist/internal/httpx"
+	"tickr/internal/httpx"
 )
 
 // Event is one calendar entry from any source.

@@ -6,7 +6,7 @@ import (
 	"html"
 	"strings"
 
-	"breaklist/internal/httpx"
+	"tickr/internal/httpx"
 )
 
 var quoteTpl = Tpl("quote", `{{if .Title}}<div class="h">{{.Title}}</div>{{end}}<div class="quote">{{.Text}}</div>{{if .By}}<div class="c s">— {{.By}}</div>{{end}}`)

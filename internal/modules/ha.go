@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	"breaklist/internal/connectors"
+	"tickr/internal/connectors"
 )
 
 // ── Home Assistant entities ──────────────────────────────────────────────────

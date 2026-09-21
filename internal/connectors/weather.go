@@ -1,4 +1,4 @@
-// Package connectors holds clients for the external services Breaklist talks to.
+// Package connectors holds clients for the external services Tickr talks to.
 package connectors
 
 import (
@@ -9,8 +9,8 @@ import (
 	"net/url"
 	"time"
 
-	"breaklist/internal/config"
-	"breaklist/internal/httpx"
+	"tickr/internal/config"
+	"tickr/internal/httpx"
 )
 
 // Hour is one hourly forecast slot. Temperatures are Celsius.

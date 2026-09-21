@@ -1,10 +1,10 @@
-// Command breaklist generates thermal-printer morning reports and serves the
+// Command tickr generates thermal-printer morning reports and serves the
 // configuration GUI.
 //
-//	breaklist serve              start the GUI + scheduler (default)
-//	breaklist generate [--print] build the report once and exit
-//	breaklist modules            list available sections
-//	breaklist open               open the GUI in the browser (starts serve)
+//	tickr serve              start the GUI + scheduler (default)
+//	tickr generate [--print] build the report once and exit
+//	tickr modules            list available sections
+//	tickr open               open the GUI in the browser (starts serve)
 package main
 
 import (
@@ -21,11 +21,11 @@ import (
 	"syscall"
 	"time"
 
-	"breaklist/internal/config"
-	"breaklist/internal/logging"
-	"breaklist/internal/modules"
-	"breaklist/internal/render"
-	"breaklist/internal/server"
+	"tickr/internal/config"
+	"tickr/internal/logging"
+	"tickr/internal/modules"
+	"tickr/internal/render"
+	"tickr/internal/server"
 )
 
 var version = "2.0.0"
@@ -34,11 +34,11 @@ func main() {
 	log.SetFlags(log.Ltime)
 	server.Version = version
 
-	fs := flag.NewFlagSet("breaklist", flag.ExitOnError)
-	dataDir := fs.String("data", "", "data folder holding breaklist.json, lists and output (default: folder of the executable, or current dir if it has breaklist.json)")
+	fs := flag.NewFlagSet("tickr", flag.ExitOnError)
+	dataDir := fs.String("data", "", "data folder holding tickr.json, lists and output (default: folder of the executable, or current dir if it has tickr.json)")
 	fs.Usage = func() {
-		fmt.Fprintf(os.Stderr, "Breaklist %s — morning reports for thermal printers\n\n", version)
-		fmt.Fprintln(os.Stderr, "Usage: breaklist [--data DIR] <command>")
+		fmt.Fprintf(os.Stderr, "Tickr %s — morning reports for thermal printers\n\n", version)
+		fmt.Fprintln(os.Stderr, "Usage: tickr [--data DIR] <command>")
 		fmt.Fprintln(os.Stderr, "  serve      start the web GUI and scheduler (default)")
 		fmt.Fprintln(os.Stderr, "  open       start the GUI and open it in your browser")
 		fmt.Fprintln(os.Stderr, "  generate   build the report once (add --print to send it to the printer)")
@@ -64,7 +64,7 @@ func main() {
 	if err := logging.Setup(dir); err != nil {
 		log.Printf("warning: could not open log file: %v", err)
 	}
-	log.Printf("Breaklist %s starting (%s) · data folder %s", version, cmd, dir)
+	log.Printf("Tickr %s starting (%s) · data folder %s", version, cmd, dir)
 	store := config.NewStore(dir)
 	cfg, err := store.Load()
 	if err != nil {
@@ -133,7 +133,7 @@ func main() {
 	}
 }
 
-// resolveDataDir picks the folder that holds breaklist.json: an explicit flag,
+// resolveDataDir picks the folder that holds tickr.json: an explicit flag,
 // else the current directory if it already has a config or legacy .env, else
 // the executable's folder.
 func resolveDataDir(flagDir string) string {

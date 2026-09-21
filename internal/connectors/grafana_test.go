@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"breaklist/internal/config"
+	"tickr/internal/config"
 )
 
 func TestGrafanaQuery(t *testing.T) {

@@ -7,8 +7,8 @@ import (
 	"strings"
 	"time"
 
-	"breaklist/internal/config"
-	"breaklist/internal/httpx"
+	"tickr/internal/config"
+	"tickr/internal/httpx"
 )
 
 // Grafana is a client for a Grafana server's HTTP API. It runs queries

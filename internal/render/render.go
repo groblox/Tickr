@@ -22,8 +22,8 @@ import (
 	"sync"
 	"time"
 
-	"breaklist/internal/config"
-	"breaklist/internal/modules"
+	"tickr/internal/config"
+	"tickr/internal/modules"
 )
 
 // printerLeftMarginMM reserves space many receipt printer drivers won't
@@ -77,10 +77,10 @@ func New(dataDir string) *Renderer {
 }
 
 // PDFPath is where the latest report lives.
-func (r *Renderer) PDFPath() string { return filepath.Join(r.OutDir, "breaklist.pdf") }
+func (r *Renderer) PDFPath() string { return filepath.Join(r.OutDir, "tickr.pdf") }
 
 // HTMLPath is the intermediate HTML.
-func (r *Renderer) HTMLPath() string { return filepath.Join(r.OutDir, "breaklist.html") }
+func (r *Renderer) HTMLPath() string { return filepath.Join(r.OutDir, "tickr.html") }
 
 // RenderSections runs every enabled module concurrently and returns sections
 // in configured order. Failures are logged and skipped so one dead API never
@@ -503,7 +503,7 @@ func splitShellCommand(s string) (argv []string, ok bool) {
 }
 
 // NoteResult describes a finished "print this text" job. It is kept separate
-// from Result/output/breaklist.pdf so an incoming note never collides with,
+// from Result/output/tickr.pdf so an incoming note never collides with,
 // or gets mistaken for, the scheduled morning report.
 type NoteResult struct {
 	PDFPath   string    `json:"pdfPath"`

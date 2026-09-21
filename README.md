@@ -1,4 +1,4 @@
-# Breaklist
+# Tickr
 
 A morning briefing for a receipt printer.
 
@@ -6,9 +6,13 @@ Every morning a 47 mm strip of thermal paper comes out with the day's calendar, 
 
 ![The layout editor](docs/images/gui-report.png)
 
+## About
+
+Tickr is a low-tech, distraction-free way to start the day: no app to open, no notifications, just a slip of paper on the fridge. It's built for anyone who wants a household briefing without a screen, and for the small person who gets their own page to trace and colour every morning. See [docs/ABOUT.md](docs/ABOUT.md) for the full pitch and stack.
+
 ## What it does
 
-Breaklist is a single Go binary. Run `breaklist serve` and a small web app appears at `localhost:8787` where you turn sections on and off, drag them into order, tweak each one, hook up the services you use, and set a schedule. From then on it generates a PDF sized to your paper and hands it to the printer on its own.
+Tickr is a single Go binary. Run `tickr serve` and a small web app appears at `localhost:8787` where you turn sections on and off, drag them into order, tweak each one, hook up the services you use, and set a schedule. From then on it generates a PDF sized to your paper and hands it to the printer on its own.
 
 There are about forty sections to choose from. A few that people ask about:
 
@@ -29,15 +33,15 @@ There are about forty sections to choose from. A few that people ask about:
 You need Go 1.22+ and [wkhtmltopdf](https://wkhtmltopdf.org/downloads.html), which does the HTML-to-PDF work.
 
 ```sh
-git clone https://github.com/groblox/breaklist-lp.git
-cd breaklist-lp
+git clone https://github.com/groblox/tickr-lp.git
+cd tickr-lp
 make
-./build/breaklist open
+./build/tickr open
 ```
 
 The browser opens on the layout editor. Set your coordinates and time zone under **General**, connect whatever you use under **Connectors** (each card has a test button), pick your sections, and press **Generate now**. When it looks right, add a schedule under **Schedule & print**.
 
-Settings live in `breaklist.json` next to the binary. Secrets stay on your machine.
+Settings live in `tickr.json` next to the binary. Secrets stay on your machine.
 
 ## Printing
 
@@ -45,7 +49,7 @@ Anything that can print a PDF works. The print command is configurable; the defa
 
 ## Sending a note to print
 
-Not everything is a morning report. Type text into the GUI, message a Telegram bot, or `curl` a token-authenticated endpoint, and Breaklist prints just that text — same paper, same wkhtmltopdf pipeline, no report attached.
+Not everything is a morning report. Type text into the GUI, message a Telegram bot, or `curl` a token-authenticated endpoint, and Tickr prints just that text — same paper, same wkhtmltopdf pipeline, no report attached.
 
 - **Telegram** — create a bot with [@BotFather](https://t.me/BotFather), paste its token into the Connectors tab, and message it. Long polling means nothing is exposed to the internet; the bot tells an unrecognized chat its id so you can add it to the allow list.
 - **HTTP** — generate a token in the Connectors tab and `POST /print-text` with an `Authorization: Bearer` header to a second listener on its own port (default 8788), separate from the unauthenticated GUI port. Good for Shortcuts, Home Assistant automations, or a script over Tailscale.
@@ -94,8 +98,8 @@ Local event sources are the flakiest thing a morning printout depends on: sites 
 - Everything except the connectors you configure runs without API keys: jokes, quotes, trivia, xkcd, Pokémon, Wikipedia, Hacker News, ESPN, sunrise times, holidays, crypto prices, people in space.
 - Pictures are resized and dithered before they reach the printer; JPEG orientation is honoured.
 - The page height is measured, not guessed, so the strip is exactly as long as the content.
-- Logs go to `output/breaklist.log` and are visible in the GUI.
-- If the data folder lives in a cloud-synced directory, Breaklist keeps a second copy of its settings in your user config folder and repairs the synced one if the sync client damages it. It is still happier outside cloud sync.
+- Logs go to `output/tickr.log` and are visible in the GUI.
+- If the data folder lives in a cloud-synced directory, Tickr keeps a second copy of its settings in your user config folder and repairs the synced one if the sync client damages it. It is still happier outside cloud sync.
 
 ## License
 

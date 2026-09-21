@@ -9,8 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"breaklist/internal/faces"
-	"breaklist/internal/imaging"
+	"tickr/internal/faces"
+	"tickr/internal/imaging"
 )
 
 // ── Family photo with a face ─────────────────────────────────────────────────

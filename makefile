@@ -1,20 +1,20 @@
 .PHONY: all build test run serve release clean
 
-BIN := build/breaklist
+BIN := build/tickr
 ifeq ($(OS),Windows_NT)
-BIN := build/breaklist.exe
+BIN := build/tickr.exe
 endif
 
 all: build
 
 build:
-	go build -ldflags '-w -s' -o $(BIN) ./cmd/breaklist
+	go build -ldflags '-w -s' -o $(BIN) ./cmd/tickr
 
 test:
 	go vet ./...
 	go test ./...
 
-# Start the GUI + scheduler from the repo folder (uses ./breaklist.json).
+# Start the GUI + scheduler from the repo folder (uses ./tickr.json).
 serve: build
 	$(BIN) serve
 

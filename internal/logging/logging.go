@@ -23,11 +23,11 @@ var (
 	file *os.File
 )
 
-// Setup routes log output to <dataDir>/output/breaklist.log as well as stderr.
+// Setup routes log output to <dataDir>/output/tickr.log as well as stderr.
 func Setup(dataDir string) error {
 	mu.Lock()
 	defer mu.Unlock()
-	path = filepath.Join(dataDir, "output", "breaklist.log")
+	path = filepath.Join(dataDir, "output", "tickr.log")
 	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
 		return err
 	}

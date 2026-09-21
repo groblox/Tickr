@@ -9,7 +9,7 @@ import (
 	"testing"
 )
 
-// fakeTelegram mimics the three Bot API methods Breaklist uses, keyed off the
+// fakeTelegram mimics the three Bot API methods Tickr uses, keyed off the
 // token embedded in the URL path the way the real API works.
 func fakeTelegram(t *testing.T, validToken string) *httptest.Server {
 	t.Helper()
@@ -28,7 +28,7 @@ func fakeTelegram(t *testing.T, validToken string) *httptest.Server {
 		}
 		switch {
 		case strings.HasSuffix(r.URL.Path, "/getMe"):
-			_, _ = w.Write([]byte(`{"ok":true,"result":{"username":"breaklist_bot"}}`))
+			_, _ = w.Write([]byte(`{"ok":true,"result":{"username":"tickr_bot"}}`))
 		case strings.HasSuffix(r.URL.Path, "/getUpdates"):
 			off := r.URL.Query().Get("offset")
 			if off == "0" || off == "" {
@@ -67,7 +67,7 @@ func TestTelegramClient(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if username, err := tg.GetMe(ctx); err != nil || username != "breaklist_bot" {
+	if username, err := tg.GetMe(ctx); err != nil || username != "tickr_bot" {
 		t.Fatalf("GetMe: %v %q", err, username)
 	}
 

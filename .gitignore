@@ -8,11 +8,11 @@ tmp/
 .vscode
 build/
 dist/
-# Breaklist 2
-breaklist.json*
-breaklist.json.tmp
+# Tickr 2
+tickr.json*
+tickr.json.tmp
 output/
-.breaklist-*.idx
+.tickr-*.idx
 build/serve.log
 jpgs/
 weatherIcons/

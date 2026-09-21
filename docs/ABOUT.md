@@ -1,6 +1,6 @@
-# What is Breaklist?
+# What is Tickr?
 
-Breaklist is a personal morning briefing that prints on a thermal receipt printer. Think of it as a tiny daily newspaper, just for your household.
+Tickr is a personal morning briefing that prints on a thermal receipt printer. Think of it as a tiny daily newspaper, just for your household.
 
 Every morning it generates a slip of paper containing whatever you have switched on:
 
@@ -16,7 +16,7 @@ The PDF is sized for 47 mm receipt paper (configurable). Print it, tear it off, 
 
 ## How it works
 
-Run `breaklist open`, and a small web app appears in your browser. Tick the sections you want, drag them into order, connect the services you use, and set a schedule. Breaklist then generates and prints the report every morning on its own.
+Run `tickr open`, and a small web app appears in your browser. Tick the sections you want, drag them into order, connect the services you use, and set a schedule. Tickr then generates and prints the report every morning on its own.
 
 ## The stack
 

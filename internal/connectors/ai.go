@@ -6,8 +6,8 @@ import (
 	"os"
 	"strings"
 
-	"breaklist/internal/config"
-	"breaklist/internal/httpx"
+	"tickr/internal/config"
+	"tickr/internal/httpx"
 )
 
 // AI providers.

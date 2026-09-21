@@ -10,7 +10,7 @@ import (
 	"strings"
 	"sync"
 
-	"breaklist/internal/connectors"
+	"tickr/internal/connectors"
 )
 
 // ── Ask an AI ────────────────────────────────────────────────────────────────

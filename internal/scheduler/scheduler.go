@@ -17,7 +17,7 @@ import (
 	"sync"
 	"time"
 
-	"breaklist/internal/config"
+	"tickr/internal/config"
 )
 
 // RunFunc performs one scheduled run (generate and, if asked, print).

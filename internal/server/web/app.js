@@ -1,4 +1,4 @@
-/* Breaklist GUI — vanilla JS, no build step. */
+/* Tickr GUI — vanilla JS, no build step. */
 (() => {
   const $ = (sel, el = document) => el.querySelector(sel);
   const $$ = (sel, el = document) => Array.from(el.querySelectorAll(sel));
@@ -504,7 +504,7 @@
     refreshLog();
     const st = state.status;
     if (st.last) showRun(st.last); else if (st.lastError) $('#run-log').textContent = 'Last run failed: ' + st.lastError;
-    $('#pdf-frame').src = st.pdfExists ? '/output/breaklist.pdf?t=' + Date.now() + '#toolbar=0&view=FitH' : 'about:blank';
+    $('#pdf-frame').src = st.pdfExists ? '/output/tickr.pdf?t=' + Date.now() + '#toolbar=0&view=FitH' : 'about:blank';
     $('#history').innerHTML = (st.history || []).map((h) => `<div class="hist"><b class="${h.ok ? 'ok' : 'err'}">${h.ok ? 'OK' : 'FAIL'}</b> ${new Date(h.time).toLocaleString()} · ${esc(h.trigger)} · ${esc(h.message)}${h.printed ? ' · printed' : ''}</div>`).join('') || '<p class="muted small">No runs yet.</p>';
     $('#notes-history').innerHTML = (st.notes || []).slice().reverse().map((n) => `<div class="hist"><b class="${n.ok ? 'ok' : 'err'}">${n.ok ? 'OK' : 'FAIL'}</b> ${new Date(n.time).toLocaleString()} · ${esc(n.source)}${n.error ? ' · ' + esc(n.error) : ''}<div class="muted small">${esc(n.text.length > 140 ? n.text.slice(0, 140) + '…' : n.text)}</div></div>`).join('') || '<p class="muted small">No notes printed yet.</p>';
   }

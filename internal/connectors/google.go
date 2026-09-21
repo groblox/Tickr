@@ -10,8 +10,8 @@ import (
 	"strings"
 	"time"
 
-	"breaklist/internal/config"
-	"breaklist/internal/httpx"
+	"tickr/internal/config"
+	"tickr/internal/httpx"
 )
 
 // GoogleRedirectURI must match the URI registered on the OAuth client.

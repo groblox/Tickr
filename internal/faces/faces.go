@@ -10,8 +10,8 @@ import (
 
 	pigo "github.com/esimov/pigo/core"
 
-	"breaklist/assets"
-	"breaklist/internal/imaging"
+	"tickr/assets"
+	"tickr/internal/imaging"
 )
 
 // Face is one detection in the coordinates of the image passed to Detect.

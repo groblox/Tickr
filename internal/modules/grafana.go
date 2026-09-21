@@ -6,7 +6,7 @@ import (
 	"math"
 	"strings"
 
-	"breaklist/internal/connectors"
+	"tickr/internal/connectors"
 )
 
 // ── Grafana query ────────────────────────────────────────────────────────────

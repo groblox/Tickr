@@ -11,7 +11,7 @@ import (
 	"sync"
 	"time"
 
-	"breaklist/internal/connectors"
+	"tickr/internal/connectors"
 )
 
 // ── Local events aggregator ──────────────────────────────────────────────────

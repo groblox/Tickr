@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"breaklist/internal/config"
+	"tickr/internal/config"
 )
 
 func newTestStore(t *testing.T, sch config.Schedule) *config.Store {

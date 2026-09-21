@@ -1,9 +1,9 @@
-project_name: breaklist
+project_name: tickr
 
 builds:
-  - id: breaklist
-    main: ./cmd/breaklist
-    binary: breaklist
+  - id: tickr
+    main: ./cmd/tickr
+    binary: tickr
     env:
       - CGO_ENABLED=0
     ldflags:

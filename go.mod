@@ -1,4 +1,4 @@
-module breaklist
+module tickr
 
 go 1.22
 

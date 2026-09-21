@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"breaklist/internal/astro"
+	"tickr/internal/astro"
 )
 
 // ── Seasons & sky calendar ───────────────────────────────────────────────────

@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-// Meta is the little EXIF data Breaklist cares about.
+// Meta is the little EXIF data Tickr cares about.
 type Meta struct {
 	Orientation int       // 1..8 per the EXIF spec, 0 if unknown
 	Taken       time.Time // DateTimeOriginal, zero if unknown

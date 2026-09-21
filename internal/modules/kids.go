@@ -6,7 +6,7 @@ import (
 	"html/template"
 	"strings"
 
-	"breaklist/internal/kids"
+	"tickr/internal/kids"
 )
 
 func childName(env *Env) string {

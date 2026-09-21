@@ -5,7 +5,7 @@ import (
 	"sort"
 	"strings"
 
-	"breaklist/internal/connectors"
+	"tickr/internal/connectors"
 )
 
 // ── Google Tasks ─────────────────────────────────────────────────────────────

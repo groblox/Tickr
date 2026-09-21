@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"breaklist/internal/httpx"
+	"tickr/internal/httpx"
 )
 
 // browserUA makes listing sites serve the same HTML a browser gets; several

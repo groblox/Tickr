@@ -17,8 +17,8 @@ import (
 	"sync"
 	"time"
 
-	"breaklist/internal/config"
-	"breaklist/internal/connectors"
+	"tickr/internal/config"
+	"tickr/internal/connectors"
 )
 
 // Category groups modules in the GUI.

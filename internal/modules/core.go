@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"breaklist/internal/connectors"
+	"tickr/internal/connectors"
 )
 
 // ── Header ───────────────────────────────────────────────────────────────────

@@ -20,12 +20,12 @@ The GUI talks to the server through this JSON API. It listens on `0.0.0.0:<port>
 | POST | `/api/test/ai` | Body `{"provider": "anthropic"\|"openai", "ai": {...}}`. Sends a one-word prompt to confirm the key works. |
 | POST | `/api/test/grafana` | Body `{"url", "token"}`. Checks the server and lists data sources with their UIDs. |
 | GET | `/api/grafana/datasources` | Lists Grafana data sources using the saved connector. |
-| GET | `/api/log?n=300` | Last n lines of `output/breaklist.log`. |
+| GET | `/api/log?n=300` | Last n lines of `output/tickr.log`. |
 | POST | `/api/schedules/{index}/run` | Runs a schedule now (generate, and print if the schedule prints), with its retry policy. |
 | POST | `/api/auth/google/start` | Saves the client id/secret from the body, starts the callback listener on :3031 and returns `{url}` to open. |
 | POST | `/api/auth/dropbox/start` | Same for Dropbox on :3030 (PKCE). |
 | POST | `/api/disconnect/{google\|dropbox\|homeassistant}` | Forgets the stored token. |
-| GET | `/output/breaklist.pdf` | The latest report. `/output/breaklist.html` is the HTML it was rendered from. |
+| GET | `/output/tickr.pdf` | The latest report. `/output/tickr.html` is the HTML it was rendered from. |
 | POST | `/api/print-text` | Body `{"title", "text"}`. Prints just that text, not a full report. Same trust boundary as `/api/config` (localhost, no token) — used by the GUI's "Send a note" box. |
 | POST | `/api/test/telegram` | Body `{"botToken", ...}` (falls back to the saved token if blank). Confirms the bot token and returns its `@username`. |
 | POST | `/api/messaging/token` | Generates and saves a new bearer token for the print-text API, returning `{"token": "..."}` once — it is not stored in plaintext anywhere retrievable afterward, so copy it immediately. |

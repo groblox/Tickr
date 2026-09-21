@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"net/url"
 
-	"breaklist/internal/config"
-	"breaklist/internal/httpx"
+	"tickr/internal/config"
+	"tickr/internal/httpx"
 )
 
 // PWSStats are the current readings of a personal weather station.

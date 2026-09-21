@@ -10,8 +10,8 @@ import (
 	"strings"
 	"time"
 
-	"breaklist/internal/httpx"
-	"breaklist/internal/imaging"
+	"tickr/internal/httpx"
+	"tickr/internal/imaging"
 )
 
 var imageTpl = Tpl("image", `{{if .Title}}<div class="h">{{.Title}}</div>{{end}}<div class="imgwrap"><img src="{{url .Src}}" style="width:{{.Width}}%{{if .Offset}};position:relative;left:-{{.Offset}}%{{end}}"></div>{{if .Caption}}<div class="c s">{{.Caption}}</div>{{end}}`)
@@ -98,7 +98,7 @@ func (folderImageModule) Render(_ context.Context, env *Env, opt Options) (*Sect
 
 // sequentialIndex keeps a tiny counter file so each run advances one image.
 func sequentialIndex(dataDir, key string, n int) int {
-	path := filepath.Join(dataDir, ".breaklist-"+key+".idx")
+	path := filepath.Join(dataDir, ".tickr-"+key+".idx")
 	var cur int
 	if b, err := os.ReadFile(path); err == nil {
 		fmt.Sscanf(string(b), "%d", &cur)
