@@ -154,12 +154,13 @@ func (dailyModule) Render(ctx context.Context, env *Env, opt Options) (*Section,
 type sunMoonModule struct{}
 
 var sunMoonTpl = Tpl("sunmoon", `<div class="h">{{.Title}}</div>
-<table class="kv"><tr><td>Sunrise</td><td>{{.Sunrise}}</td></tr><tr><td>Sunset</td><td>{{.Sunset}}</td></tr><tr><td>Daylight</td><td>{{.Daylight}}</td></tr>{{if .Moon}}<tr><td>Moon</td><td>{{.Moon}} {{.MoonPct}}</td></tr>{{end}}</table>`)
+<div class="c t">Sun: {{.Sunrise}} - {{.Sunset}}</div>
+{{if .MoonIcon}}<div class="moon">{{.MoonIcon}}<div class="s">{{.Moon}}</div></div>{{end}}`)
 
 func (sunMoonModule) Info() Info {
 	return Info{
 		ID: "sun_moon", Name: "Sun & moon", Category: CatWeather, DefaultEnabled: false, Needs: []string{"weather"},
-		Description: "Sunrise, sunset and day length from the weather forecast, plus the moon phase (computed locally, no separate API call).",
+		Description: "Sunrise and sunset from the weather forecast, plus a graphic of tonight's moon phase (computed locally, no separate API call).",
 		Fields: []Field{
 			{Key: "title", Label: "Heading", Type: FieldText, Default: "Sun & moon"},
 			{Key: "showMoon", Label: "Show moon phase", Type: FieldBool, Default: true},
@@ -178,17 +179,20 @@ func (sunMoonModule) Render(ctx context.Context, env *Env, opt Options) (*Sectio
 	if day == nil || day.Sunrise.IsZero() || day.Sunset.IsZero() {
 		return nil, fmt.Errorf("the weather provider did not return sunrise/sunset times")
 	}
-	data := struct{ Title, Sunrise, Sunset, Daylight, Moon, MoonPct string }{
-		Title: opt.Str("title", "Sun & moon"), Sunrise: day.Sunrise.Format("3:04 PM"), Sunset: day.Sunset.Format("3:04 PM"),
+	data := struct {
+		Title, Sunrise, Sunset, Moon string
+		MoonIcon                     template.HTML
+	}{
+		Title: opt.Str("title", "Sun & moon"), Sunrise: day.Sunrise.Format("3:04pm"), Sunset: day.Sunset.Format("3:04pm"),
 	}
-	dl := day.Sunset.Sub(day.Sunrise)
-	data.Daylight = fmt.Sprintf("%dh %02dm", int(dl.Hours()), int(dl.Minutes())%60)
+	est := 20 + 15
 	if opt.Bool("showMoon", true) {
-		name, illum := MoonPhase(env.Now)
+		name, _, frac := MoonPhase(env.Now)
 		data.Moon = name
-		data.MoonPct = fmt.Sprintf("(%.0f%%)", illum*100)
+		data.MoonIcon = template.HTML(wxicons.MoonPhaseSVG(frac, 44))
+		est += 44 + 12
 	}
-	return Exec("sun_moon", sunMoonTpl, data, 20+4*13)
+	return Exec("sun_moon", sunMoonTpl, data, est)
 }
 
 // todayDaily returns the forecast's entry for today (matching by calendar
@@ -206,9 +210,12 @@ func todayDaily(fc *connectors.Forecast, now time.Time) *connectors.Day {
 	return nil
 }
 
-// MoonPhase returns the phase name and illuminated fraction for a date using
-// the mean synodic month from a known new moon (2000-01-06 18:14 UTC).
-func MoonPhase(t time.Time) (string, float64) {
+// MoonPhase returns the phase name, illuminated fraction and position in the
+// cycle (0 = new moon, 0.5 = full moon, approaching 1 = new moon again) for a
+// date, using the mean synodic month from a known new moon (2000-01-06 18:14
+// UTC). The phase position is what a graphic of the moon's current shape
+// needs; see wxicons.MoonPhaseSVG.
+func MoonPhase(t time.Time) (string, float64, float64) {
 	const synodic = 29.53058867
 	ref := time.Date(2000, 1, 6, 18, 14, 0, 0, time.UTC)
 	days := t.UTC().Sub(ref).Hours() / 24
@@ -237,7 +244,7 @@ func MoonPhase(t time.Time) (string, float64) {
 	default:
 		name = "Waning crescent"
 	}
-	return name, illum
+	return name, illum, frac
 }
 
 // ── Air quality ──────────────────────────────────────────────────────────────

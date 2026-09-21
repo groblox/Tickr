@@ -139,6 +139,36 @@ func (e *Env) Depth(mm float64) string {
 	return fmt.Sprintf("%.1f mm", mm)
 }
 
+// Pressure formats millibars in the configured unit.
+func (e *Env) Pressure(mb float64) string {
+	if e.Cfg.Imperial() {
+		return fmt.Sprintf("%.2f inHg", mb*0.0295299831)
+	}
+	return fmt.Sprintf("%.0f mb", mb)
+}
+
+// imageTargetDPI is the raster resolution embedded images are prepared at.
+// The PDF itself is authored at a fixed 96 CSS px/inch (see contentDPI in
+// package render), but that number describes page layout, not what a 1-bit
+// thermal print head can resolve — most receipt/label printers are 200-300+
+// dots per inch. An image capped to a flat pixel width regardless of paper
+// size looks soft next to crisp vector text and icons; sizing it from the
+// configured paper width instead keeps it sharp on any paper width.
+const imageTargetDPI = 300.0
+
+// ImageMaxWidth returns the raster width, in pixels, an image should be
+// prepared at to print sharply at widthPct of the configured paper width.
+func (e *Env) ImageMaxWidth(widthPct int) int {
+	base := int(e.Cfg.General.PaperWidthMM / 25.4 * imageTargetDPI)
+	if base < 200 {
+		base = 200
+	}
+	if widthPct > 100 {
+		return base * widthPct / 100
+	}
+	return base
+}
+
 // DaySeed returns a stable per-day integer for "of the day" picks.
 func (e *Env) DaySeed() int {
 	y, m, d := e.Now.Date()

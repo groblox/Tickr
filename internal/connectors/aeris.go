@@ -14,8 +14,12 @@ import (
 // PWSStats are the current readings of a personal weather station.
 type PWSStats struct {
 	TempC         float64
+	FeelsLikeC    float64
 	Humidity      float64
+	DewpointC     float64
 	WindKmh       float64
+	WindGustKmh   float64
+	PressureMB    float64
 	RainTodayMM   float64
 	RainYesterday float64 // mm
 	HasStats      bool
@@ -48,8 +52,12 @@ func GetPWSStats(ctx context.Context, a config.Aeris) (*PWSStats, error) {
 	type obStruct struct {
 		Ob struct {
 			TempC         *float64 `json:"tempC"`
+			FeelslikeC    *float64 `json:"feelslikeC"`
 			Humidity      *float64 `json:"humidity"`
+			DewpointC     *float64 `json:"dewpointC"`
 			WindKPH       *float64 `json:"windKPH"`
+			WindGustKPH   *float64 `json:"windGustKPH"`
+			PressureMB    *float64 `json:"pressureMB"`
 			PrecipTodayMM *float64 `json:"precipTodayMM"`
 		} `json:"ob"`
 	}
@@ -65,11 +73,23 @@ func GetPWSStats(ctx context.Context, a config.Aeris) (*PWSStats, error) {
 	if ob.Ob.TempC != nil {
 		stats.TempC = *ob.Ob.TempC
 	}
+	if ob.Ob.FeelslikeC != nil {
+		stats.FeelsLikeC = *ob.Ob.FeelslikeC
+	}
 	if ob.Ob.Humidity != nil {
 		stats.Humidity = *ob.Ob.Humidity
 	}
+	if ob.Ob.DewpointC != nil {
+		stats.DewpointC = *ob.Ob.DewpointC
+	}
 	if ob.Ob.WindKPH != nil {
 		stats.WindKmh = *ob.Ob.WindKPH
+	}
+	if ob.Ob.WindGustKPH != nil {
+		stats.WindGustKmh = *ob.Ob.WindGustKPH
+	}
+	if ob.Ob.PressureMB != nil {
+		stats.PressureMB = *ob.Ob.PressureMB
 	}
 	if ob.Ob.PrecipTodayMM != nil {
 		stats.RainTodayMM = *ob.Ob.PrecipTodayMM

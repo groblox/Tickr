@@ -297,16 +297,18 @@ func (s *Server) handleStatus(w http.ResponseWriter, _ *http.Request) {
 			"homeassistant": cfg.Connectors.HomeAssistant.URL != "" && cfg.Connectors.HomeAssistant.Token != "",
 			"aeris":         cfg.Connectors.Aeris.ClientID != "" && cfg.Connectors.Aeris.StationID != "",
 			"weather":       cfg.General.Location != "" && (cfg.Connectors.Weather.Provider == "openmeteo" || cfg.Connectors.Weather.TomorrowAPIKey != ""),
-			"ai":            connectors.AIKey(cfg.Connectors.AI, connectors.ProviderAnthropic) != "" || connectors.AIKey(cfg.Connectors.AI, connectors.ProviderOpenAI) != "",
-			"ticketmaster":  cfg.Connectors.Events.TicketmasterKey != "",
-			"grafana":       cfg.Connectors.Grafana.URL != "" && cfg.Connectors.Grafana.Token != "",
-			"telegram":      cfg.Connectors.Telegram.BotToken != "" && len(cfg.Connectors.Telegram.AllowedChatIDs) > 0,
-			"messaging":     cfg.Connectors.Messaging.APIToken != "",
+			"ai": connectors.AIKey(cfg.Connectors.AI, connectors.ProviderAnthropic) != "" || connectors.AIKey(cfg.Connectors.AI, connectors.ProviderOpenAI) != "" ||
+				connectors.AIKey(cfg.Connectors.AI, connectors.ProviderOpenRouter) != "" || cfg.Connectors.AI.LocalBaseURL != "",
+			"ticketmaster": cfg.Connectors.Events.TicketmasterKey != "",
+			"grafana":      cfg.Connectors.Grafana.URL != "" && cfg.Connectors.Grafana.Token != "",
+			"telegram":     cfg.Connectors.Telegram.BotToken != "" && len(cfg.Connectors.Telegram.AllowedChatIDs) > 0,
+			"messaging":    cfg.Connectors.Messaging.APIToken != "",
 		},
 		"printPort": cfg.Server.PrintPort,
 		"aiEnv": map[string]bool{
-			"anthropic": os.Getenv("ANTHROPIC_API_KEY") != "",
-			"openai":    os.Getenv("OPENAI_API_KEY") != "",
+			"anthropic":  os.Getenv("ANTHROPIC_API_KEY") != "",
+			"openai":     os.Getenv("OPENAI_API_KEY") != "",
+			"openrouter": os.Getenv("OPENROUTER_API_KEY") != "",
 		},
 	}
 	if ok {
@@ -624,6 +626,15 @@ func (s *Server) handleTestAI(w http.ResponseWriter, r *http.Request) {
 	}
 	if body.AI.OpenAIBaseURL != "" {
 		ai.OpenAIBaseURL = body.AI.OpenAIBaseURL
+	}
+	if body.AI.OpenRouterKey != "" && body.AI.OpenRouterKey != config.Masked {
+		ai.OpenRouterKey = body.AI.OpenRouterKey
+	}
+	if body.AI.LocalBaseURL != "" {
+		ai.LocalBaseURL = body.AI.LocalBaseURL
+	}
+	if body.AI.LocalKey != "" && body.AI.LocalKey != config.Masked {
+		ai.LocalKey = body.AI.LocalKey
 	}
 	if body.Provider == "" {
 		body.Provider = connectors.ProviderAnthropic

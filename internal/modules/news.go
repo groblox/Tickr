@@ -18,7 +18,7 @@ type headline struct {
 }
 
 var listTpl = Tpl("headlines", `<div class="h">{{.Title}}</div>
-<ul class="news">{{range .Items}}<li>{{.Title}}{{if .Meta}}<div class="s">{{.Meta}}</div>{{end}}</li>{{end}}</ul>`)
+<ul class="news">{{range .Items}}<li>{{.Title}}{{if .Meta}} <span class="s">{{.Meta}}</span>{{end}}</li>{{end}}</ul>`)
 
 func headlinesSection(id, title string, items []headline) (*Section, error) {
 	if len(items) == 0 {
@@ -26,10 +26,11 @@ func headlinesSection(id, title string, items []headline) (*Section, error) {
 	}
 	est := 24
 	for _, it := range items {
-		est += LinesPx(it.Title, 36, 13) + 5
+		text := it.Title
 		if it.Meta != "" {
-			est += 9
+			text += " " + it.Meta
 		}
+		est += LinesPx(text, 36, 13) + 5
 	}
 	return Exec(id, listTpl, struct {
 		Title string
@@ -48,6 +49,7 @@ func (nytModule) Info() Info {
 		Fields: []Field{
 			{Key: "title", Label: "Heading", Type: FieldText, Default: "NY Times"},
 			{Key: "count", Label: "Headlines", Type: FieldNumber, Default: 5, Min: F64(1), Max: F64(15)},
+			{Key: "showSummary", Label: "Show summary sentence", Type: FieldBool, Default: true, Help: "The 1–2 sentence excerpt upstract.com shows under each headline."},
 		},
 	}
 }
@@ -65,6 +67,7 @@ func (nytModule) Render(ctx context.Context, env *Env, opt Options) (*Section, e
 	if err != nil {
 		return nil, fmt.Errorf("upstract: %w", err)
 	}
+	showSummary := opt.Bool("showSummary", true)
 	var items []headline
 	doc.Find("#s_nyt_main ul li").Each(func(_ int, s *goquery.Selection) {
 		a := s.Find("a").First()
@@ -76,7 +79,11 @@ func (nytModule) Render(ctx context.Context, env *Env, opt Options) (*Section, e
 			return
 		}
 		if t := strings.TrimSpace(a.Text()); t != "" {
-			items = append(items, headline{Title: t})
+			h := headline{Title: t}
+			if showSummary {
+				h.Meta = strings.TrimSpace(a.AttrOr("data-p", ""))
+			}
+			items = append(items, h)
 		}
 	})
 	if n := opt.Int("count", 5); len(items) > n {

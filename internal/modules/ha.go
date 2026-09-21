@@ -16,7 +16,7 @@ type haRow struct {
 	Name, Value string
 }
 
-var haTpl = Tpl("ha", `<div class="h">{{.Title}}</div><table class="kv">{{range .Rows}}<tr><td>{{.Name}}</td><td>{{.Value}}</td></tr>{{end}}</table>`)
+var haTpl = Tpl("ha", `<div class="h">{{.Title}}</div><table class="kv hdrtype">{{range .Rows}}<tr><td>{{.Name}}</td><td>{{.Value}}</td></tr>{{end}}</table>`)
 
 func (haEntitiesModule) Info() Info {
 	return Info{

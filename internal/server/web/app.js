@@ -332,9 +332,14 @@
         <label>Anthropic API key <input id="ai-anthropic" type="password" placeholder="${state.status.aiEnv?.anthropic ? 'using ANTHROPIC_API_KEY from the environment' : 'sk-ant-…'}"></label>
         <label>OpenAI API key <input id="ai-openai" type="password" placeholder="${state.status.aiEnv?.openai ? 'using OPENAI_API_KEY from the environment' : 'sk-…'}"></label>
         <label>OpenAI-compatible base URL <input id="ai-base" placeholder="blank = api.openai.com; e.g. http://localhost:11434/v1 for Ollama"></label>
-        <div class="hint">Used by the “Ask an AI” section. Keys left blank fall back to the ANTHROPIC_API_KEY / OPENAI_API_KEY environment variables. Model, prompts and tokens are set per section.</div>
+        <label>OpenRouter API key <input id="ai-openrouter" type="password" placeholder="${state.status.aiEnv?.openrouter ? 'using OPENROUTER_API_KEY from the environment' : 'sk-or-…'}"></label>
+        <label>Local server URL (llama.cpp, Ollama, LM Studio…) <input id="ai-local-base" placeholder="e.g. http://localhost:8080/v1 for llama.cpp's llama-server"></label>
+        <label>Local server API key <input id="ai-local-key" type="password" placeholder="only if the server was started with an API key"></label>
+        <div class="hint">Used by the “Ask an AI” section. Keys left blank fall back to the ANTHROPIC_API_KEY / OPENAI_API_KEY / OPENROUTER_API_KEY environment variables. A local server usually needs no key at all. Model, prompts and tokens are set per section.</div>
         <button class="btn small" id="ai-test-anthropic">Test Anthropic</button>
         <button class="btn small" id="ai-test-openai">Test OpenAI</button>
+        <button class="btn small" id="ai-test-openrouter">Test OpenRouter</button>
+        <button class="btn small" id="ai-test-local">Test local server</button>
         <div class="result" id="ai-result"></div></div>
 
       <div class="card"><h3>Grafana <span class="status ${st.grafana ? 'ok' : ''}">${st.grafana ? 'configured' : 'not configured'}</span></h3>
@@ -388,8 +393,11 @@
     $('#gf-test').onclick = () => showResult('gf-result', api('POST', '/api/test/grafana', c.grafana));
     c.ai = c.ai || {};
     bind('ai-anthropic', c.ai, 'anthropicKey', { secret: true }); bind('ai-openai', c.ai, 'openaiKey', { secret: true }); bind('ai-base', c.ai, 'openaiBaseUrl');
+    bind('ai-openrouter', c.ai, 'openrouterKey', { secret: true }); bind('ai-local-base', c.ai, 'localBaseUrl'); bind('ai-local-key', c.ai, 'localKey', { secret: true });
     $('#ai-test-anthropic').onclick = () => showResult('ai-result', api('POST', '/api/test/ai', { provider: 'anthropic', ai: c.ai }));
     $('#ai-test-openai').onclick = () => showResult('ai-result', api('POST', '/api/test/ai', { provider: 'openai', ai: c.ai }));
+    $('#ai-test-openrouter').onclick = () => showResult('ai-result', api('POST', '/api/test/ai', { provider: 'openrouter', ai: c.ai }));
+    $('#ai-test-local').onclick = () => showResult('ai-result', api('POST', '/api/test/ai', { provider: 'local', ai: c.ai }));
 
     c.telegram = c.telegram || {};
     bind('tg-token', c.telegram, 'botToken', { secret: true });

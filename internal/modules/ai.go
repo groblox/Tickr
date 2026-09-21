@@ -26,11 +26,12 @@ const defaultAIPrompt = "Today is {weekday}, {date}. The weather: {weather}. " +
 func (aiModule) Info() Info {
 	return Info{
 		ID: "ai", Name: "Ask an AI", Category: CatFun, DefaultEnabled: false, Needs: []string{"ai"},
-		Description: "Sends a prompt to Claude or an OpenAI-compatible model and prints the reply. Use it for a daily note, a riddle, a haiku about the weather, a toddler story, anything.",
+		Description: "Sends a prompt to Claude, OpenAI, an OpenRouter model, or a local model served by llama.cpp/Ollama/LM Studio, and prints the reply. Use it for a daily note, a riddle, a haiku about the weather, a toddler story, anything.",
 		Fields: []Field{
 			{Key: "title", Label: "Heading", Type: FieldText, Default: "A note for today"},
-			{Key: "provider", Label: "Provider", Type: FieldSelect, Options: []string{"anthropic", "openai"}, Default: "anthropic", Help: "Keys live on the Connectors tab (or ANTHROPIC_API_KEY / OPENAI_API_KEY in the environment)."},
-			{Key: "model", Label: "Model", Type: FieldText, Default: "", Help: "Blank = claude-sonnet-5 (Anthropic) or gpt-4o-mini (OpenAI). Other ideas: claude-haiku-4-5-20251001, claude-opus-5, gpt-4o."},
+			{Key: "provider", Label: "Provider", Type: FieldSelect, Options: []string{"anthropic", "openai", "openrouter", "local"}, Default: "anthropic",
+				Help: "Keys live on the Connectors tab (or ANTHROPIC_API_KEY / OPENAI_API_KEY / OPENROUTER_API_KEY in the environment). \"local\" talks to an OpenAI-compatible server on your own network, such as llama.cpp's llama-server, Ollama or LM Studio — set its URL on the Connectors tab."},
+			{Key: "model", Label: "Model", Type: FieldText, Default: "", Help: "Blank = claude-sonnet-5 (Anthropic), gpt-4o-mini (OpenAI), openai/gpt-4o-mini (OpenRouter). OpenRouter models are \"vendor/name\", e.g. anthropic/claude-sonnet-5 or meta-llama/llama-3.1-70b-instruct. For \"local\", most servers ignore this and just serve whatever model they loaded."},
 			{Key: "system", Label: "System prompt", Type: FieldTextarea, Default: defaultAISystem},
 			{Key: "prompt", Label: "Prompt", Type: FieldTextarea, Default: defaultAIPrompt,
 				Help: "Placeholders: {date} {weekday} {name} {location} {weather} {season} {seed}. {weather} is today's high/low and conditions."},

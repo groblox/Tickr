@@ -609,7 +609,7 @@ img{image-rendering:pixelated}
 .sec{page-break-inside:avoid}
 .divider{border-top:3px double #000;margin:6px 0}
 .hdr{font-size:14px;font-weight:bold;text-align:center;line-height:17px}
-.h{font-size:8px;font-weight:bold;text-align:center;letter-spacing:.08em;text-transform:uppercase;margin:4px 0 3px;border-bottom:1px solid #000;padding-bottom:2px}
+.h{font-size:10px;font-weight:normal;text-align:center;letter-spacing:.08em;text-transform:uppercase;margin:4px 0 3px;border-bottom:1px solid #000;padding-bottom:2px}
 .t{font-size:12px;line-height:15px}
 .s{font-size:8px;line-height:10px;color:#333}
 .c{text-align:center}
@@ -624,6 +624,7 @@ ul.news li{margin-bottom:5px}
 .events{margin:3px 0}.ev{margin-bottom:5px}.src{color:#777}.ev-t{font-size:9px;font-weight:bold;line-height:11px}.ev-d{font-size:8px;color:#555;line-height:10px;margin-top:1px}
 table.kv{width:100%;border-collapse:collapse;font-size:10px;line-height:13px}
 table.kv td{padding:1px 0;vertical-align:top}table.kv td:first-child{font-weight:bold;width:40%}table.kv td:last-child{text-align:right}
+table.kv.hdrtype{font-size:8px}table.kv.hdrtype td:first-child,table.kv.hdrtype td:last-child{font-weight:bold}
 table.wx-h{width:100%;border-collapse:collapse;table-layout:fixed;margin-bottom:2px}
 table.wx-h td{text-align:center;vertical-align:top;padding:2px 1px}
 .wx-h-time{font-size:8px;font-weight:bold;line-height:11px}.wx-h-temp{font-size:9px;font-weight:bold;line-height:12px}
@@ -635,6 +636,7 @@ table.wx-d td{vertical-align:middle;padding:3px 0;text-align:center}
 .wx-d-icon{width:24px}.wx-d-hilo{font-size:8px;font-weight:bold;line-height:11px;white-space:nowrap}.wx-d-hilo .lo{color:#555}
 .img img{max-width:100%;margin:3px 0}
 .imgwrap{overflow:hidden;width:100%;margin:3px 0;text-align:center;line-height:0}.imgwrap img{display:inline-block}
+.moon{text-align:center;margin-top:4px}.moon svg{display:block;margin:0 auto}.moon .s{margin-top:2px}
 table.poke{width:100%;border-collapse:collapse}table.poke td{vertical-align:middle;padding:2px}table.poke td:first-child{width:44px}
 .flip{-webkit-transform:rotate(180deg);transform:rotate(180deg);margin-top:4px;text-align:right}
 table.kid2{width:100%;border-collapse:collapse;table-layout:fixed}table.kid2 td{text-align:center;vertical-align:top}

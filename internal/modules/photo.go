@@ -79,7 +79,8 @@ func (facePhotoModule) Render(_ context.Context, env *Env, opt Options) (*Sectio
 			continue
 		}
 		crop := faces.CropAround(img, found[0], margin)
-		src, err := imaging.EncodeForPrint(crop, 400, mode)
+		w := opt.Int("width", 100)
+		src, err := imaging.EncodeForPrint(crop, env.ImageMaxWidth(w), mode)
 		if err != nil {
 			return nil, err
 		}
@@ -97,7 +98,6 @@ func (facePhotoModule) Render(_ context.Context, env *Env, opt Options) (*Sectio
 			caption = filepath.Base(path)
 		}
 		env.Log("photo: %s (%d face(s), best score %.0f)", path, len(found), found[0].Score)
-		w := opt.Int("width", 100)
 		b := crop.Bounds()
 		paperPx := int(env.Cfg.General.PaperWidthMM / 25.4 * 96)
 		est := paperPx*w/100*b.Dy()/max(b.Dx(), 1) + 24

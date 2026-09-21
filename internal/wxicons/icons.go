@@ -4,6 +4,7 @@ package wxicons
 
 import (
 	"fmt"
+	"math"
 	"strings"
 )
 
@@ -154,4 +155,46 @@ var icons = map[Kind]string{
 	Sleet:         cloud(10, 56, 36) + `<line x1="22" y1="44" x2="19" y2="53"/>` + flake(32, 49, 5) + `<line x1="44" y1="44" x2="41" y2="53"/>`,
 	Thunder:       cloud(10, 56, 34) + `<path d="M 34 36 L 26 50 H 33 L 29 60 L 40 44 H 33 L 36 36 Z" fill="#000" stroke="none"/>`,
 	Wind:          `<path d="M 10 26 H 40 a 6 6 0 1 0 -6 -6"/><path d="M 10 38 H 48 a 6 6 0 1 1 -6 6"/><path d="M 14 50 H 32 a 4 4 0 1 1 -4 4"/>`,
+}
+
+// MoonPhaseSVG draws the moon's current lit shape (a crescent, quarter,
+// gibbous or full/new disc) for a phase position in [0,1) where 0 and 1 are
+// new moon and 0.5 is full moon. The shadowed part is filled solid so it
+// reads clearly on a 1-bit thermal printer, the way printed almanacs draw
+// moon phases.
+func MoonPhaseSVG(phase float64, size int) string {
+	phase = math.Mod(phase, 1)
+	if phase < 0 {
+		phase++
+	}
+	const cx, cy, r = 32.0, 32.0, 26.0
+	angle := phase * 2 * math.Pi
+	m := r * math.Abs(math.Cos(angle))
+
+	// half draws a path for half of an ellipse (rx, r) split along the
+	// vertical diameter, closed straight back through the center: sweep 0
+	// is the left half, sweep 1 the right half. With rx==r this is exactly
+	// half of the moon's own disc; with rx==m it is the lens-shaped "lobe"
+	// used to grow or shrink the lit/dark boundary. Being built from real
+	// arcs (not a clip-path, which old WebKit-based PDF renderers such as
+	// wkhtmltopdf handle unreliably), every shape stays inside the circle
+	// on its own and renders the same in the PDF as in the GUI preview.
+	half := func(rx float64, sweep int) string {
+		return fmt.Sprintf("M %.1f %.1f A %.1f %.1f 0 0 %d %.1f %.1f Z", cx, cy-r, rx, r, sweep, cx, cy+r)
+	}
+	ellipse := fmt.Sprintf(`<ellipse cx="%.1f" cy="%.1f" rx="%.1f" ry="%.1f" fill="#000"/>`, cx, cy, m, r)
+
+	var dark string
+	switch {
+	case phase < 0.25: // waxing crescent: mostly dark, thin lit sliver growing on the right
+		dark = fmt.Sprintf(`<path d="%s" fill="#000"/>%s`, half(r, 0), ellipse)
+	case phase < 0.5: // waxing gibbous: mostly lit, thin dark sliver shrinking on the left
+		dark = fmt.Sprintf(`<path fill-rule="evenodd" fill="#000" d="%s %s"/>`, half(r, 0), half(m, 0))
+	case phase < 0.75: // waning gibbous: mostly lit, thin dark sliver growing on the right
+		dark = fmt.Sprintf(`<path fill-rule="evenodd" fill="#000" d="%s %s"/>`, half(r, 1), half(m, 1))
+	default: // waning crescent: mostly dark, thin lit sliver shrinking on the left
+		dark = fmt.Sprintf(`<path d="%s" fill="#000"/>%s`, half(r, 1), ellipse)
+	}
+	body := fmt.Sprintf(`<g stroke="none">%s</g><circle cx="%.1f" cy="%.1f" r="%.1f"/>`, dark, cx, cy, r)
+	return fmt.Sprintf(`<svg xmlns="http://www.w3.org/2000/svg" width="%d" height="%d" viewBox="0 0 64 64" fill="none" stroke="#000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">%s</svg>`, size, size, body)
 }

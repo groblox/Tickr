@@ -91,11 +91,15 @@ type Events struct {
 }
 
 // AI holds keys for the "Ask an AI" section. Empty keys fall back to the
-// ANTHROPIC_API_KEY / OPENAI_API_KEY environment variables at run time.
+// ANTHROPIC_API_KEY / OPENAI_API_KEY / OPENROUTER_API_KEY environment
+// variables at run time.
 type AI struct {
 	AnthropicKey  string `json:"anthropicKey"`
 	OpenAIKey     string `json:"openaiKey"`
 	OpenAIBaseURL string `json:"openaiBaseUrl"` // for OpenAI-compatible servers (Ollama, LM Studio…)
+	OpenRouterKey string `json:"openrouterKey"`
+	LocalBaseURL  string `json:"localBaseUrl"`       // llama.cpp's own server, e.g. http://localhost:8080/v1
+	LocalKey      string `json:"localKey,omitempty"` // only needed if llama.cpp was started with --api-key
 }
 
 // Weather selects the forecast provider.
@@ -550,6 +554,8 @@ func (c *Config) secretFields() []*string {
 		&c.Connectors.HomeAssistant.Token,
 		&c.Connectors.AI.AnthropicKey,
 		&c.Connectors.AI.OpenAIKey,
+		&c.Connectors.AI.OpenRouterKey,
+		&c.Connectors.AI.LocalKey,
 		&c.Connectors.Events.TicketmasterKey,
 		&c.Connectors.Grafana.Token,
 		&c.Connectors.Telegram.BotToken,

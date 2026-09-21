@@ -25,12 +25,16 @@ func (headerModule) Info() Info {
 		Fields: []Field{
 			{Key: "greeting", Label: "Greeting", Type: FieldText, Help: "Use {name} for the child's name, e.g. \"Good morning, {name}!\""},
 			{Key: "showDayNumber", Label: "Show day of year and week number", Type: FieldBool, Default: false},
+			{Key: "showTimestamp", Label: "Show time generated", Type: FieldBool, Default: false, Help: "Appends the time this report was generated next to the date, e.g. \"- 6:23a\"."},
 		},
 	}
 }
 
 func (headerModule) Render(_ context.Context, env *Env, opt Options) (*Section, error) {
 	data := struct{ Date, Greeting, Sub string }{Date: env.Now.Format(env.Cfg.General.DateFormat)}
+	if opt.Bool("showTimestamp", false) {
+		data.Date += " - " + strings.TrimSuffix(env.Now.Format("3:04pm"), "m")
+	}
 	if g := opt.Str("greeting", ""); g != "" {
 		data.Greeting = strings.ReplaceAll(g, "{name}", env.Cfg.General.ChildName)
 	}
@@ -139,7 +143,7 @@ func (e *Env) resolve(p string) string {
 type calendarModule struct{}
 
 var calendarTpl = Tpl("calendar", `<div class="h">{{.Title}}</div>
-<div class="events">{{range .Events}}<div class="ev"><div class="ev-t">{{.Title}}</div><div class="ev-d">{{.When}}</div></div>{{end}}</div>`)
+<div class="events">{{range .Events}}<div class="ev"><span class="ev-t">{{.Title}}</span> <span class="ev-d">{{.When}}</span></div>{{end}}</div>`)
 
 func (calendarModule) Info() Info {
 	return Info{
@@ -148,12 +152,13 @@ func (calendarModule) Info() Info {
 		Fields: []Field{
 			{Key: "title", Label: "Heading", Type: FieldText, Default: "Upcoming"},
 			{Key: "count", Label: "Number of events", Type: FieldNumber, Default: 4, Min: F64(1), Max: F64(15)},
+			{Key: "horizon", Label: "Look ahead (days)", Type: FieldNumber, Default: 0, Min: F64(0), Max: F64(365), Help: "0 = no limit, just the next events regardless of how far off. Use this to keep a far-future event (a birthday next spring) from crowding out this week."},
 		},
 	}
 }
 
 func (calendarModule) Render(ctx context.Context, env *Env, opt Options) (*Section, error) {
-	events, err := connectors.GetCalendarEvents(ctx, env.Cfg.Connectors.Google, env.Loc, opt.Int("count", 4))
+	events, err := connectors.GetCalendarEvents(ctx, env.Cfg.Connectors.Google, env.Loc, opt.Int("count", 4), opt.Int("horizon", 0))
 	if err != nil {
 		return nil, err
 	}
@@ -162,7 +167,7 @@ func (calendarModule) Render(ctx context.Context, env *Env, opt Options) (*Secti
 	}
 	est := 20
 	for _, ev := range events {
-		est += LinesPx(ev.Title, 34, 10) + 12
+		est += LinesPx(ev.Title+" "+ev.When, 34, 10) + 6
 	}
 	return Exec("calendar", calendarTpl, struct {
 		Title  string
@@ -174,14 +179,24 @@ func (calendarModule) Render(ctx context.Context, env *Env, opt Options) (*Secti
 
 type pwsModule struct{}
 
-var pwsTpl = Tpl("pws", `{{if .Title}}<div class="h">{{.Title}}</div>{{end}}
-<div class="c t pws">Temp: {{.Temp}} | Hum: {{.Hum}}%<br>Wind: {{.Wind}} | Rain today: {{.Rain}}<br>Rain yesterday: {{.RainY}}</div>`)
+var pwsTpl = Tpl("pws", `<div class="h">{{.Title}}</div><table class="kv hdrtype">{{range .Rows}}<tr><td>{{.Label}}</td><td>{{.Value}}</td></tr>{{end}}</table>`)
 
 func (pwsModule) Info() Info {
 	return Info{
 		ID: "pws", Name: "Backyard weather station", Category: CatWeather, DefaultEnabled: false, Needs: []string{"aeris"},
-		Description: "Live readings from your personal weather station via the Aeris / Xweather API.",
-		Fields:      []Field{{Key: "title", Label: "Heading", Type: FieldText, Default: ""}},
+		Description: "Live readings from your personal weather station via the Aeris / Xweather API. Pick which readings to show and in what order.",
+		Fields: []Field{
+			{Key: "title", Label: "Heading", Type: FieldText, Default: "Backyard"},
+			{Key: "showTemp", Label: "Temperature", Type: FieldBool, Default: true},
+			{Key: "showFeelsLike", Label: "Feels like", Type: FieldBool, Default: false, Help: "Not every station reports this."},
+			{Key: "showHumidity", Label: "Humidity", Type: FieldBool, Default: true},
+			{Key: "showDewPoint", Label: "Dew point", Type: FieldBool, Default: false},
+			{Key: "showWind", Label: "Wind speed", Type: FieldBool, Default: true},
+			{Key: "showWindGust", Label: "Wind gust", Type: FieldBool, Default: false, Help: "Not every station reports this."},
+			{Key: "showPressure", Label: "Barometric pressure", Type: FieldBool, Default: false},
+			{Key: "showRainToday", Label: "Rain today", Type: FieldBool, Default: true},
+			{Key: "showRainYesterday", Label: "Rain yesterday", Type: FieldBool, Default: true},
+		},
 	}
 }
 
@@ -193,11 +208,29 @@ func (pwsModule) Render(ctx context.Context, env *Env, opt Options) (*Section, e
 	if !st.HasStats {
 		return EmptySection("pws"), nil
 	}
-	data := struct{ Title, Temp, Hum, Wind, Rain, RainY string }{
-		Title: opt.Str("title", ""), Temp: env.Temp(st.TempC), Hum: fmt.Sprintf("%.0f", st.Humidity),
-		Wind: env.Speed(st.WindKmh), Rain: env.Depth(st.RainTodayMM), RainY: env.Depth(st.RainYesterday),
+	type row struct{ Label, Value string }
+	var rows []row
+	add := func(key string, def bool, label, value string) {
+		if opt.Bool(key, def) {
+			rows = append(rows, row{label, value})
+		}
 	}
-	return Exec("pws", pwsTpl, data, 50)
+	add("showTemp", true, "Temp", env.Temp(st.TempC))
+	add("showFeelsLike", false, "Feels like", env.Temp(st.FeelsLikeC))
+	add("showHumidity", true, "Humidity", fmt.Sprintf("%.0f%%", st.Humidity))
+	add("showDewPoint", false, "Dew point", env.Temp(st.DewpointC))
+	add("showWind", true, "Wind", env.Speed(st.WindKmh))
+	add("showWindGust", false, "Gust", env.Speed(st.WindGustKmh))
+	add("showPressure", false, "Pressure", env.Pressure(st.PressureMB))
+	add("showRainToday", true, "Rain today", env.Depth(st.RainTodayMM))
+	add("showRainYesterday", true, "Rain yesterday", env.Depth(st.RainYesterday))
+	if len(rows) == 0 {
+		return EmptySection("pws"), nil
+	}
+	return Exec("pws", pwsTpl, struct {
+		Title string
+		Rows  []row
+	}{opt.Str("title", "Backyard"), rows}, 20+len(rows)*13)
 }
 
 // ── Custom text ──────────────────────────────────────────────────────────────

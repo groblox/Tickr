@@ -274,7 +274,7 @@ func GoogleCalendars(ctx context.Context, g config.Google) ([]struct{ ID, Summar
 
 // GetCalendarEvents returns the next n events, resolving a calendar *name* to
 // its id when needed.
-func GetCalendarEvents(ctx context.Context, g config.Google, loc *time.Location, n int) ([]CalendarEvent, error) {
+func GetCalendarEvents(ctx context.Context, g config.Google, loc *time.Location, n, horizonDays int) ([]CalendarEvent, error) {
 	token, err := googleAccessToken(ctx, g)
 	if err != nil {
 		return nil, err
@@ -301,9 +301,14 @@ func GetCalendarEvents(ctx context.Context, g config.Google, loc *time.Location,
 			}
 		}
 	}
-	timeMin := time.Now().In(loc).Format(time.RFC3339)
+	now := time.Now().In(loc)
+	timeMin := now.Format(time.RFC3339)
 	apiURL := fmt.Sprintf("https://www.googleapis.com/calendar/v3/calendars/%s/events?maxResults=%d&orderBy=startTime&singleEvents=true&timeMin=%s",
 		url.PathEscape(calendarID), n, url.QueryEscape(timeMin))
+	if horizonDays > 0 {
+		timeMax := now.AddDate(0, 0, horizonDays).Format(time.RFC3339)
+		apiURL += "&timeMax=" + url.QueryEscape(timeMax)
+	}
 	var resp struct {
 		Items []struct {
 			Summary string `json:"summary"`

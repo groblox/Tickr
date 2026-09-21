@@ -84,11 +84,7 @@ func (folderImageModule) Render(_ context.Context, env *Env, opt Options) (*Sect
 		return nil, err
 	}
 	w := opt.Int("width", 100)
-	maxW := 400
-	if w > 100 {
-		maxW = 400 * w / 100
-	}
-	src, err := imaging.PrepareForPrint(data, maxW, imaging.ParseDither(opt.Str("dither", "none")))
+	src, err := imaging.PrepareForPrint(data, env.ImageMaxWidth(w), imaging.ParseDither(opt.Str("dither", "none")))
 	if err != nil {
 		return nil, err
 	}
@@ -173,7 +169,7 @@ func (xkcdModule) Render(ctx context.Context, env *Env, opt Options) (*Section, 
 		return nil, err
 	}
 	b := img.Bounds()
-	src, err := imaging.PrepareForPrint(data, 500, imaging.DitherNone)
+	src, err := imaging.PrepareForPrint(data, env.ImageMaxWidth(100), imaging.DitherNone)
 	if err != nil {
 		return nil, err
 	}
