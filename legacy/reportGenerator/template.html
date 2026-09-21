@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <style>
+        /* ── Base ─────────────────────────────── */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+        }
+        ul, ol {
+            padding: 0;
+            margin: 5px 0 5px 1.3em;
+        }
+
+        /* ── Dividers ─────────────────────────── */
+        .divider {
+            border-top: 3px double #000;
+            margin: 6px 0;
+        }
+        .thin-divider {
+            border: none;
+            border-top: 1px solid #ccc;
+            margin: 3px 0;
+        }
+
+        /* ── Tasks / Reminders ────────────────── */
+        .task-list {
+            list-style-type: none;
+            padding-left: 0;
+            margin: 5px 0 5px 0;
+        }
+        .task-item {
+            position: relative;
+            padding-left: 15px;
+            font-size: 11px;
+            line-height: 15px;
+            margin-bottom: 6px;
+        }
+        .task-item::before {
+            content: "";
+            position: absolute;
+            left: 2px;
+            top: 3px;
+            width: 8px;
+            height: 8px;
+            border: 1.5px solid #000;
+            border-radius: 50%;
+            box-sizing: border-box;
+        }
+
+        /* ── Upcoming Calendar ────────────────── */
+        .cal-events {
+            margin: 4px 0;
+        }
+        .cal-event {
+            margin-bottom: 5px;
+        }
+        .cal-event:last-child {
+            margin-bottom: 0;
+        }
+        .cal-event-title {
+            font-size: 8px;
+            font-weight: bold;
+            line-height: 10px;
+        }
+        .cal-event-date {
+            font-size: 7px;
+            color: #555;
+            line-height: 9px;
+            margin-top: 1px;
+        }
+
+        /* ── Joke ─────────────────────────────── */
+        .joke {
+            font-size: 11px;
+            font-style: italic;
+            text-align: center;
+            margin: 8px 5px;
+            white-space: pre-wrap;
+            line-height: 14px;
+        }
+
+        /* ── Misc layout helpers ──────────────── */
+        .txt1 { font-size: 10px; }
+        .txt2 { font-size: 7px; }
+        .margin0 { margin-top: 5px; margin-bottom: 5px; }
+        .margin1 { margin-top: 20px; margin-bottom: 20px; }
+
+        /* ═══════════════════════════════════════
+           WEATHER — shared
+           ═══════════════════════════════════════ */
+        .wx-section-label {
+            font-size: 7px;
+            font-weight: bold;
+            text-align: center;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin: 4px 0 2px 0;
+            border-bottom: 1px solid #000;
+            padding-bottom: 2px;
+        }
+
+        /* ═══════════════════════════════════════
+           WEATHER — hourly (3-col table)
+           ═══════════════════════════════════════ */
+        .wx-hourly-table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+            margin-bottom: 3px;
+        }
+
+        .wx-hourly-table td {
+            text-align: center;
+            vertical-align: top;
+            padding: 2px 1px;
+        }
+
+        .wx-h-time {
+            font-size: 8px;
+            font-weight: bold;
+            line-height: 11px;
+        }
+
+        .wx-h-icon {
+            display: block;
+            margin: 2px auto;
+        }
+
+        .wx-h-temp {
+            font-size: 9px;
+            font-weight: bold;
+            line-height: 12px;
+        }
+
+        .wx-h-sub {
+            font-size: 6px;
+            color: #333;
+            line-height: 8px;
+        }
+
+        /* ═══════════════════════════════════════
+           WEATHER — 4-day (table)
+           ═══════════════════════════════════════ */
+        .wx-daily-table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        .wx-daily-table tr {
+            border-bottom: 1px dotted #aaa;
+        }
+
+        .wx-daily-table tr:last-child {
+            border-bottom: none;
+        }
+
+        .wx-daily-table td {
+            vertical-align: middle;
+            padding: 3px 0;
+            text-align: center;
+        }
+
+        /* Col 1: day label */
+        .wx-col-day {
+            width: 26px;
+            text-align: center;
+        }
+
+        .wx-day-name {
+            font-size: 8px;
+            font-weight: bold;
+            line-height: 10px;
+        }
+
+        .wx-day-date {
+            font-size: 6px;
+            color: #555;
+            line-height: 8px;
+        }
+
+        /* Col 2: icon */
+        .wx-col-icon {
+            width: 24px;
+            text-align: center;
+        }
+
+        /* Col 3: temps + details */
+        .wx-col-temps {
+            padding-left: 2px;
+            text-align: center;
+        }
+
+        .wx-d-hilo {
+            font-size: 8px;
+            font-weight: bold;
+            line-height: 11px;
+            white-space: nowrap;
+        }
+
+        .wx-d-hi { color: #000; }
+        .wx-d-lo { color: #555; }
+
+        .wx-d-sub {
+            font-size: 6px;
+            color: #333;
+            line-height: 8px;
+        }
+    </style>
+</head>
+<body>
+    <center style="font-size: 13px; font-weight: bold;">{{.Gdate}}<br> </center>
+    {{if .Aeris.HasStats}}
+    <div style="font-size: 11px; text-align: center; margin: 5px 0; line-height: 15px;">
+        Temp: {{printf "%.1f" .Aeris.CurrentTemp}}&#176;F | Hum: {{printf "%.0f" .Aeris.Humidity}}%<br>
+        Wind: {{printf "%.1f" .Aeris.WindSpeed}} mph | Rain Today: {{printf "%.2f" .Aeris.RainToday}} in<br>
+        Rain Yesterday: {{printf "%.2f" .Aeris.RainYesterday}} in
+    </div>
+    {{end}}
+    <div class="divider"></div>
+
+    {{if .CalendarEvents}}
+    <div class="wx-section-label">Upcoming</div>
+    <div class="cal-events">
+        {{range .CalendarEvents}}
+        <div class="cal-event">
+            <div class="cal-event-title">{{.Title}}</div>
+            <div class="cal-event-date">{{.DateTime}}</div>
+        </div>
+        {{end}}
+    </div>
+    <div class="divider"></div>
+    {{end}}
+
+    <ul class="task-list">
+        {{range .TasksRems}} <li class="task-item">{{.}}</li> {{end}}
+    </ul>
+    <div class="divider"></div>
+
+    {{if .Joke}}
+    <div class="joke">{{.Joke}}</div>
+    <div class="divider"></div>
+    {{end}}
+
+    {{if .HasFarside}}
+    <center>
+        <img src="farside.jpg" style="width: 100%; max-width: 250px; margin-top: 5px; margin-bottom: 5px;">
+    </center>
+    <div class="divider"></div>
+    {{end}}
+
+    {{/* ── Today's 3-hour forecast strip ─────── */}}
+    {{if .HourlyForecasts}}
+    <div class="wx-section-label">Bluff Park Today</div>
+    <table class="wx-hourly-table">
+        <tr>
+            {{range .HourlyForecasts}}
+            <td>
+                <div class="wx-h-time">{{.TimeString}}</div>
+                <img class="wx-h-icon"
+                     src="./weathercodes/{{.WeatherCode}}0.png"
+                     width="26" height="26"
+                     alt="">
+                <div class="wx-h-temp">{{.Temp}}</div>
+                <div class="wx-h-sub">dew {{.DewPoint}}</div>
+                <div class="wx-h-sub">rain {{.PrecipProb}}%</div>
+            </td>
+            {{end}}
+        </tr>
+    </table>
+    <div class="thin-divider"></div>
+    {{end}}
+
+    {{/* ── 4-day daily forecast ───────────────── */}}
+    {{if .DailyForecasts}}
+    <div class="wx-section-label">4-Day Outlook</div>
+    <table class="wx-daily-table">
+        {{range .DailyForecasts}}
+        <tr>
+            <td class="wx-col-day">
+                <div class="wx-day-name">{{.DayName}}</div>
+                <div class="wx-day-date">{{.DateStr}}</div>
+            </td>
+            <td class="wx-col-icon">
+                <img src="./weathercodes/{{.WeatherCode}}0.png"
+                     width="20" height="20"
+                     alt="">
+            </td>
+            <td class="wx-col-temps">
+                <div class="wx-d-hilo">
+                    <span class="wx-d-hi">&#9650;{{.TempHigh}}</span>&nbsp;
+                    <span class="wx-d-lo">&#9660;{{.TempLow}}</span>
+                </div>
+                <div class="wx-d-sub">dew {{.DewPoint}}&nbsp;&nbsp;rain {{.PrecipProb}}%</div>
+            </td>
+        </tr>
+        {{end}}
+    </table>
+    <div class="divider"></div>
+    {{end}}
+
+    {{if .NYTArticles}}
+    <center style="font-size: 11px; font-weight: bold;">NY Times</center>
+    <hr style="margin: 4px 0;">
+    <ul style="list-style-type: circle; font-size: 10px; line-height: 14px; margin: 5px 0 5px 1.3em; padding: 0;">
+        {{range .NYTArticles}}
+            <li style="margin-bottom: 6px;"><a href="{{.Link}}" style="text-decoration: none; color: black;">{{.Title}}</a></li>
+        {{end}}
+    </ul>
+    <div class="divider"></div>
+    {{end}}
+
+    {{if .HNArticles}}
+    <div>
+        {{range .HNArticles}}
+            <div class="txt1 margin0">{{.Title}} </div>
+            <div class="txt2 margin0">{{.Votes}} &#10084;   |   {{.Time}}   |   {{.Link}}</div>
+            <div class="txt1 margin0">{{.Summary}} </div>
+            <div class="margin1"></div><hr><div class="margin1"></div>
+       {{end}}
+    </div>
+    {{end}}
+</body>
+</html>

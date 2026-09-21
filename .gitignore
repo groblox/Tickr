@@ -1,0 +1,18 @@
+*.list
+*.pdf
+*.exe
+temp.html
+.env
+go.work.sum
+tmp/
+.vscode
+build/
+dist/
+# Breaklist 2
+breaklist.json*
+breaklist.json.tmp
+output/
+.breaklist-*.idx
+build/serve.log
+jpgs/
+weatherIcons/

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Breaklist</title>
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='6' y='2' width='20' height='28' rx='2' fill='%23fff' stroke='%23111' stroke-width='2'/%3E%3Cpath d='M10 9h12M10 14h12M10 19h8' stroke='%23111' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E">
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div class="brand"><span class="logo">🧾</span><div><b>Breaklist</b><small id="version">…</small></div></div>
+    <nav>
+      <button class="nav active" data-tab="report">Report layout</button>
+      <button class="nav" data-tab="connectors">Connectors</button>
+      <button class="nav" data-tab="schedule">Schedule &amp; print</button>
+      <button class="nav" data-tab="general">General</button>
+      <button class="nav" data-tab="preview">Preview &amp; runs</button>
+    </nav>
+    <div class="side-foot">
+      <div id="next-run" class="muted small">No schedule active</div>
+      <div id="data-dir" class="muted small"></div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div id="tab-title">Report layout</div>
+      <div class="actions">
+        <span id="dirty" class="pill hidden">Unsaved changes</span>
+        <button id="btn-save" class="btn primary">Save</button>
+        <button id="btn-generate" class="btn">Generate now</button>
+        <button id="btn-print" class="btn">Print last</button>
+      </div>
+    </header>
+
+    <section id="tab-report" class="tab active">
+      <p class="lead">Turn sections on or off, drag them into the order you want them printed, and click a section to change its options. Everything prints top to bottom in this order.</p>
+      <div class="toolbar">
+        <input id="filter" type="search" placeholder="Filter sections…">
+        <label class="chk"><input type="checkbox" id="only-enabled"> Only enabled</label>
+        <span class="spacer"></span>
+        <button class="btn small" id="btn-reset-layout">Reset to default layout</button>
+      </div>
+      <div id="sections"></div>
+    </section>
+
+    <section id="tab-connectors" class="tab">
+      <p class="lead">Credentials for the services Breaklist talks to. Secrets are stored in <code>breaklist.json</code> on this machine only.</p>
+      <div class="cards" id="connector-cards"></div>
+    </section>
+
+    <section id="tab-schedule" class="tab">
+      <p class="lead">Breaklist generates (and optionally prints) automatically while <code>breaklist serve</code> is running. Times are in the time zone from General settings.</p>
+      <div class="card">
+        <h3>Schedules</h3>
+        <div id="schedules"></div>
+        <button class="btn small" id="btn-add-schedule">+ Add schedule</button>
+      </div>
+      <div class="card">
+        <h3>Printing</h3>
+        <label>Print command <small class="muted">— <code>{pdf}</code> is replaced with the report path</small>
+          <input id="print-command" type="text" spellcheck="false">
+        </label>
+        <div class="hint">Windows: the default sends the PDF to the default printer through the PDF viewer's print verb. macOS/Linux: <code>lp "{pdf}"</code> or <code>lp -d PRINTER_NAME "{pdf}"</code>. For a raw ESC/POS printer, point this at a script that converts the PDF.</div>
+        <button class="btn small" id="btn-test-print">Test print command</button>
+        <span id="print-result" class="muted small"></span>
+      </div>
+      <div class="card">
+        <h3>Send a note to print</h3>
+        <div class="hint">Prints just this text right now — not a full report. Also reachable from Telegram or the HTTP endpoint on the Connectors tab.</div>
+        <label>Title (optional) <input id="note-title" type="text" placeholder="Note" maxlength="80"></label>
+        <label>Text <textarea id="note-text" placeholder="What should the printer say?" style="min-height:80px"></textarea></label>
+        <button class="btn small primary" id="note-send">Print it</button>
+        <span id="note-result" class="muted small"></span>
+      </div>
+    </section>
+
+    <section id="tab-general" class="tab">
+      <div class="card">
+        <h3>Location &amp; time</h3>
+        <div class="grid2">
+          <label>Time zone (IANA) <input id="g-timezone" placeholder="America/Chicago"></label>
+          <label>Coordinates <input id="g-location" placeholder="33.4054,-86.8114"><small class="muted">lat,lng — used for weather, sun and air quality</small></label>
+          <label>Location name <input id="g-locname" placeholder="Bluff Park"></label>
+          <label>Units <select id="g-units"><option value="imperial">Imperial (°F, mph, in)</option><option value="metric">Metric (°C, km/h, mm)</option></select></label>
+          <label>Child's name <input id="g-child" placeholder="used by the kids sections"></label>
+          <label>Date format <input id="g-datefmt" placeholder="Mon Jan 2, 2006"><small class="muted">Go layout: Mon Jan 2, 2006 · Monday, January 2</small></label>
+          <label>Weather icons <select id="g-icons"><option value="outline">Outline line art (crisp SVG)</option><option value="classic">Classic (Breaklist 1 PNG set)</option></select></label>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Paper &amp; output</h3>
+        <div class="grid2">
+          <label>Paper width (mm) <input id="g-paper" type="number" min="20" max="300" step="1"></label>
+          <label>Bottom margin (mm) <input id="g-margin" type="number" min="0" max="50" step="1"><small class="muted">room for the tear-off</small></label>
+          <label>wkhtmltopdf path <input id="g-wk" placeholder="auto-detect"></label>
+          <label>GUI port <input id="g-port" type="number" min="1" max="65535"><small class="muted">takes effect on restart</small></label>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Tasks &amp; reminders</h3>
+        <div class="grid2">
+          <label>Task source <select id="t-source"><option value="local">Local file</option><option value="dropbox">Dropbox</option></select></label>
+          <label>Tasks file <input id="t-tasks" placeholder="tasks.list"></label>
+          <label>Reminders file <input id="t-reminders" placeholder="reminders.list"></label>
+        </div>
+        <div class="hint">Reminders are one per line: <code>DAY MONTH WEEKDAY|text</code>, e.g. <code>1 * *|Pay rent</code>, <code>* * 1-5|Pack lunch</code>, <code>25 12 *|Merry Christmas!</code> (weekday 0 = Sunday). Paths are relative to the data folder unless absolute.</div>
+      </div>
+    </section>
+
+    <section id="tab-preview" class="tab">
+      <div class="preview-wrap">
+        <div class="preview-pane">
+          <div class="toolbar">
+            <button class="btn small" id="btn-refresh-preview">Refresh</button>
+            <a class="btn small" id="link-pdf" href="/output/breaklist.pdf" target="_blank">Open PDF</a>
+            <a class="btn small" id="link-html" href="/output/breaklist.html" target="_blank">Open HTML</a>
+            <span id="preview-meta" class="muted small"></span>
+          </div>
+          <iframe id="pdf-frame" title="Report preview"></iframe>
+        </div>
+        <div class="preview-log">
+          <h3>Last run</h3>
+          <pre id="run-log" class="log">No report generated yet.</pre>
+          <h3>History</h3>
+          <div id="history"></div>
+          <h3>Notes printed</h3>
+          <div id="notes-history"></div>
+          <h3>Server log <button class="btn small" id="btn-refresh-log">Refresh</button></h3>
+          <div id="log-path" class="muted small"></div>
+          <pre id="server-log" class="log">…</pre>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div id="modal" class="modal hidden"><div class="modal-box"><div class="modal-head"><b id="modal-title"></b><button class="btn small" id="modal-close">Close</button></div><div id="modal-body"></div></div></div>
+<div id="toast" class="toast hidden"></div>
+<script src="app.js"></script>
+</body>
+</html>
